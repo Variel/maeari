@@ -17,14 +17,17 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
       variant="outline"
       overflow="hidden"
       maxW="300px"
-      backgroundColor={senderType === "me" ? undefined : "#EDF2F7"}
+      backgroundColor={senderType === "me" ? "#3182CE" : "#EDF2F7"}
+      color={senderType === "me" ? "white" : "inherit"}
+      border="none"
+      borderRadius={"16px"}
       ml={senderType === "me" ? "auto" : undefined}
       my={2}
     >
       {image && (
         <Image objectFit="cover" width="100%" maxH="200px" src={image} alt="" />
       )}
-      <CardBody px={2.5} py={1} whiteSpace="pre-wrap">{children}</CardBody>
+      <CardBody px={3} py={1} whiteSpace="pre-wrap">{children}</CardBody>
     </Card>
   );
 };
