@@ -1,13 +1,13 @@
 import { Box, Card, CardBody, Image } from "@chakra-ui/react";
 import { ReactNode } from "react";
 
-interface ChatMessageProps {
+interface ChatMessageViewProps {
   senderType: "me" | "other";
   children: string;
   image?: string;
 }
 
-const ChatMessage: React.FC<ChatMessageProps> = ({
+const ChatMessageView: React.FC<ChatMessageViewProps> = ({
   senderType,
   children,
   image,
@@ -32,4 +32,4 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   );
 };
 
-export default ChatMessage;
+export default ChatMessageView;

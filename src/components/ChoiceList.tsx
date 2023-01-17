@@ -16,14 +16,14 @@ const ChoiceButton: React.FC<ChoiceButtonProps> = ({ children, onClick }) => {
 
 interface ChoiceListProps {
   options: string[];
-  onChoice: (choice: string) => void;
+  onChoice: (choice: number) => void;
 }
 
 const ChoiceList: React.FC<ChoiceListProps> = ({ options, onChoice }) => {
   return (
     <Box display="flex" justifyContent="flex-end" flexWrap="wrap">
       {options.map((option, idx) => (
-        <ChoiceButton key={idx} onClick={() => onChoice(option)}>
+        <ChoiceButton key={idx} onClick={() => onChoice(idx)}>
           {option}
         </ChoiceButton>
       ))}

@@ -1,11 +1,12 @@
 import { Box, Image } from "@chakra-ui/react";
-import { ChatMessageData } from "../types/ChatMessageData";
-import ChatMessage from "./ChatMessage";
+import { ChatMessage, isPlainChatMessage } from "../types/ChatMessage";
+import ChatMessageView from "./ChatMessageView";
+import FormMessageView from "./FormMessageView";
 
 interface ChatMessageGroupProps {
   senderType: "me" | "other";
   senderImage?: string;
-  children: ChatMessageData[];
+  children: ChatMessage[];
 }
 
 const ChatMessageGroup: React.FC<ChatMessageGroupProps> = ({
@@ -14,19 +15,34 @@ const ChatMessageGroup: React.FC<ChatMessageGroupProps> = ({
   children,
 }) => {
   return (
-    <Box
-      display="flex"
-      alignItems="flex-end"
-    >
+    <Box display="flex" alignItems="flex-end">
       {senderType !== "me" && senderImage && (
-        <Image src={senderImage} borderRadius="full" boxSize="24px" mr={1} mb={3} />
+        <Image
+          src={senderImage}
+          borderRadius="full"
+          boxSize="24px"
+          mr={1}
+          mb={3}
+        />
       )}
       <Box flexGrow={1} display="flex">
-        {children.map((msg, idx) => (
-          <ChatMessage key={idx} senderType={msg.senderType} image={msg.image}>
-            {msg.message}
-          </ChatMessage>
-        ))}
+        {children.map((msg, idx) => {
+          if (isPlainChatMessage(msg)) {
+            // Plain message
+            return (
+              <ChatMessageView
+                key={idx}
+                senderType={msg.senderType}
+                image={msg.image}
+              >
+                {msg.message}
+              </ChatMessageView>
+            );
+          } else {
+            // Form message
+            return <FormMessageView fields={msg.fields} />;
+          }
+        })}
       </Box>
     </Box>
   );

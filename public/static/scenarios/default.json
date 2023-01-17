@@ -1,0 +1,83 @@
+{
+  "senderName": "산타파이브",
+  "senderImage": "https://picsum.photos/400/400",
+  "steps": [
+    {
+      "type": "choice",
+      "messages": [
+        {
+          "message": "이건 저겁니다",
+          "image": "https://picsum.photos/400/500"
+        },
+        {
+          "message": "저건 이겁니다"
+        }
+      ],
+      "options": [
+        {
+          "message": "이게 뭐죠?",
+          "step": 1,
+          "log": "로그인 계정: 트위터"
+        },
+        {
+          "message": "저건 뭐죠?",
+          "step": 2,
+          "log": "로그인 계정: 카카오"
+        },
+        {
+          "message": "엥 진짜요?",
+          "step": 3,
+          "log": "로그인 계정: 네이버"
+        }
+      ]
+    },
+    {
+      "type": "form",
+      "messages": [
+        {
+          "message": "정보를 알려주세요",
+          "image": "https://picsum.photos/400/500"
+        },
+        {
+          "message": "진짜요?"
+        }
+      ],
+      "fields": [
+        {
+          "type": "text",
+          "name": "이름",
+          "label": "이름을 입력해주세요",
+          "required": false
+        },
+        {
+          "type": "email",
+          "name": "이메일",
+          "label": "답장 받을 이메일을 입력해주세요",
+          "required": true
+        },
+        {
+          "type": "select",
+          "name": "성별",
+          "label": "성별을 입력해주세요",
+          "options": ["이거", "저거", "없음", "왜"],
+          "required": false 
+        },
+        {
+          "type": "file",
+          "name": "첨부파일",
+          "label": "스크린샷을 올려주세요",
+          "accept": "image/*",
+          "required": false
+        },
+        {
+          "type": "text",
+          "name": "트리 주소",
+          "label": "트리 주소를 적어주세요",
+          "pattern": "^https:\\/\\/colormytree\\.me\\/",
+          "validationMessage": "올바른 트리 주소를 적어주세요",
+          "required": false
+        }
+      ]
+    }
+  ]
+}
