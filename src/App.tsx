@@ -2,10 +2,21 @@ import { Box, Button } from "@chakra-ui/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import ChatMessageView from "./components/ChatMessageView";
 import ChatMessageGroup from "./components/ChatMessageGroup";
-import ChoiceList from "./components/ChoiceList";
+import ChoiceListView from "./components/ChoiceListView";
 import { Route, BrowserRouter, useParams } from "react-router-dom";
-import { Scenario } from "./types/Scenario";
-import { ChatMessage, PlainChatMessageBase } from "./types/ChatMessage";
+import {
+  ChoiceStep,
+  isChoiceStep,
+  isFormStep,
+  Scenario,
+} from "./types/Scenario";
+import {
+  ChatMessage,
+  OtherSenderChatMessage,
+  PlainChatMessageBase,
+} from "./types/ChatMessage";
+import { useMessageGroup } from "./hooks/useMessageGroup";
+import FormView from "./components/FormView";
 
 const buildChatMessageGroups: (
   chatMessages?: ChatMessage[]
@@ -38,7 +49,9 @@ function App() {
   const { scenarioId } = useParams();
   const [scenario, setScenario] = useState<Scenario>();
   const [currentStep, _setCurrentStep] = useState<number>();
-  const [messages, setMessages] = useState<ChatMessage[]>();
+  const { groups: messageGroups, addMessages } = useMessageGroup();
+
+  const currentStepValue = scenario?.steps[currentStep ?? 0];
 
   const toChatMessage: (plainChatMessage: PlainChatMessageBase) => ChatMessage =
     useCallback(
@@ -48,16 +61,39 @@ function App() {
       [scenario]
     );
 
-  const setCurrentStep = useCallback((step: number) => {
-    if (!scenario?.steps[step]) return;
-    if (step === currentStep) return;
+  const setCurrentStep = useCallback(
+    (step: number) => {
+      if (!scenario?.steps[step]) return;
+      if (step === currentStep) return;
 
-    _setCurrentStep(step);
-    setMessages((messages) => [
-      ...(messages || []),
-      ...scenario.steps[step].messages.map((msg) => toChatMessage(msg)),
-    ]);
-  }, [scenario, _setCurrentStep]);
+      _setCurrentStep(step);
+
+      const messagesToAdd = scenario.steps[step].messages.map((msg) =>
+        toChatMessage(msg)
+      );
+      addMessages(messagesToAdd);
+    },
+    [scenario, _setCurrentStep]
+  );
+
+  const handleChoice = useCallback(
+    (choice: number) => {
+      const currentStep = currentStepValue as ChoiceStep;
+      const nextStep = currentStep.options[choice].step;
+
+      addMessages({
+        message: currentStep.options[choice].message,
+        senderType: "me",
+      });
+
+      setCurrentStep(nextStep);
+    },
+    [currentStepValue]
+  );
+
+  const handleSubmit = useCallback((formData: FormData) => {
+    
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -74,46 +110,33 @@ function App() {
     setCurrentStep(0);
   }, [scenario]);
 
-  const chatMessageGroups = useMemo(
-    () => buildChatMessageGroups(messages),
-    [messages]
-  );
-  console.log(chatMessageGroups);
-
   return (
     (scenario && currentStep !== undefined && (
       <>
         <div className="App">
           <Box p={4}>
-            <ChatMessageGroup
-              senderImage="https://picsum.photos/200/200"
-              senderType="other"
-            >
-              {[
-                {
-                  senderType: "other",
-                  senderImage: "https://picsum.photos/400/200",
-                  message: "asdf",
-                },
-              ]}
-            </ChatMessageGroup>
-            <ChatMessageGroup senderType="me">
-              {[
-                {
-                  senderType: "me",
-                  message: "asdf",
-                },
-              ]}
-            </ChatMessageGroup>
-            <ChoiceList
-              options={[
-                "어머 그건 선택할 수 없어요",
-                "정말 그걸 하시게썽요?",
-                "후회 하지 않을건가요?",
-                "qwerfw",
-              ]}
-              onChoice={(e) => console.log(e)}
-            />
+            {messageGroups.map((group, groupIndex) => (
+              <ChatMessageGroup
+                key={`group-${groupIndex}`}
+                senderType={group[0].senderType}
+                senderImage={(group[0] as OtherSenderChatMessage).senderImage}
+              >
+                {group}
+              </ChatMessageGroup>
+            ))}
+            {isChoiceStep(currentStepValue!) && (
+              <ChoiceListView
+                options={currentStepValue.options.map((opt) => opt.message)}
+                onChoice={handleChoice}
+              />
+            )}
+            {isFormStep(currentStepValue!) && (
+              <FormView
+                submitButton={currentStepValue.submitButton}
+                fields={currentStepValue.fields}
+                onSubmit={handleSubmit}
+              />
+            )}
           </Box>
         </div>
       </>

@@ -19,9 +19,9 @@ interface ChoiceListProps {
   onChoice: (choice: number) => void;
 }
 
-const ChoiceList: React.FC<ChoiceListProps> = ({ options, onChoice }) => {
+const ChoiceListView: React.FC<ChoiceListProps> = ({ options, onChoice }) => {
   return (
-    <Box display="flex" justifyContent="flex-end" flexWrap="wrap">
+    <Box display="flex" justifyContent="flex-end" flexWrap="wrap" mt={2} mb={1}>
       {options.map((option, idx) => (
         <ChoiceButton key={idx} onClick={() => onChoice(idx)}>
           {option}
@@ -31,4 +31,4 @@ const ChoiceList: React.FC<ChoiceListProps> = ({ options, onChoice }) => {
   );
 };
 
-export default ChoiceList;
+export default ChoiceListView;

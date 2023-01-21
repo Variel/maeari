@@ -25,7 +25,7 @@ const ChatMessageGroup: React.FC<ChatMessageGroupProps> = ({
           mb={3}
         />
       )}
-      <Box flexGrow={1} display="flex">
+      <Box flexGrow={1} display="flex" flexDirection="column">
         {children.map((msg, idx) => {
           if (isPlainChatMessage(msg)) {
             // Plain message

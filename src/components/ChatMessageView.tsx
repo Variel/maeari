@@ -22,7 +22,8 @@ const ChatMessageView: React.FC<ChatMessageViewProps> = ({
       border="none"
       borderRadius={"16px"}
       ml={senderType === "me" ? "auto" : undefined}
-      my={2}
+      mr={senderType === "me" ? undefined : "auto"}
+      my={1}
     >
       {image && (
         <Image objectFit="cover" width="100%" maxH="200px" src={image} alt="" />

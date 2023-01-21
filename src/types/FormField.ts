@@ -9,11 +9,13 @@ export type TextFormField = {
   type: "text";
   pattern?: string;
   validationMessage?: string;
+  placeholder?: string;
 } & FormFieldBase;
 
 export type EmailFormField = {
   type: "email";
-};
+  placeholder?: string;
+} & FormFieldBase;
 
 export type FileFormField = {
   type: "file";
@@ -23,7 +25,8 @@ export type FileFormField = {
 export type SelectFormField = {
   type: "select";
   options: string[];
-};
+  placeholder: string;
+} & FormFieldBase;
 
 export type FormField =
   | TextFormField
