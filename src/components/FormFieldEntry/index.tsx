@@ -6,13 +6,14 @@ import TextFormFieldEntry from "./TextFormFieldEntry";
 interface FormFieldEntryProps {
   field: FormField;
   value: string;
-  onChange: (value?: string, file?: File) => void;
+  onChange?: (value?: string, file?: File) => void;
+  readonly?: boolean;
 }
-
 const FormFieldEntry: React.FC<FormFieldEntryProps> = ({
   field,
   value,
   onChange,
+  readonly,
 }) => {
   switch (field.type) {
     case "email":
@@ -27,6 +28,7 @@ const FormFieldEntry: React.FC<FormFieldEntryProps> = ({
           }
           validationMessage={"올바른 이메일을 적어주세요"}
           type="email"
+          readonly={readonly}
         />
       );
     case "text":
@@ -39,6 +41,7 @@ const FormFieldEntry: React.FC<FormFieldEntryProps> = ({
           pattern={field.pattern}
           placeholder={field.placeholder}
           validationMessage={field.validationMessage}
+          readonly={readonly}
         />
       );
     case "select":
@@ -50,6 +53,7 @@ const FormFieldEntry: React.FC<FormFieldEntryProps> = ({
           required={field.required}
           options={field.options}
           placeholder={field.placeholder}
+          readonly={readonly}
         />
       );
     case "file":
@@ -60,6 +64,7 @@ const FormFieldEntry: React.FC<FormFieldEntryProps> = ({
           accept={field.accept}
           required={field.required}
           value={value}
+          readonly={readonly}
         />
       );
     default:

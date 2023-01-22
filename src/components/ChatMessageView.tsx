@@ -17,7 +17,7 @@ const ChatMessageView: React.FC<ChatMessageViewProps> = ({
       variant="outline"
       overflow="hidden"
       maxW="300px"
-      backgroundColor={senderType === "me" ? "#3182CE" : "#EDF2F7"}
+      backgroundColor={senderType === "me" ? "blue.500" : "gray.100"}
       color={senderType === "me" ? "white" : "inherit"}
       border="none"
       borderRadius={"16px"}
@@ -28,7 +28,9 @@ const ChatMessageView: React.FC<ChatMessageViewProps> = ({
       {image && (
         <Image objectFit="cover" width="100%" maxH="200px" src={image} alt="" />
       )}
-      <CardBody px={3} py={1} whiteSpace="pre-wrap">{children}</CardBody>
+      <CardBody px={3} py={1} whiteSpace="pre-wrap">
+        {children}
+      </CardBody>
     </Card>
   );
 };

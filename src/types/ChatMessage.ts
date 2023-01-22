@@ -18,14 +18,18 @@ export type PlainChatMessageBase = {
   image?: string;
 };
 
-export type PlainChatMessage = PlainChatMessageBase & (OtherSenderChatMessage | MeSenderChatMessage);
+export type PlainChatMessage = PlainChatMessageBase &
+  (OtherSenderChatMessage | MeSenderChatMessage);
 
 export type FormChatMessage = {
   fields: FormField[];
+  fieldData: Record<string, string | File>;
 } & MeSenderChatMessage;
 
 export type ChatMessage = PlainChatMessage | FormChatMessage;
 
-export const isPlainChatMessage = (chatMessage: ChatMessage): chatMessage is PlainChatMessage => {
+export const isPlainChatMessage = (
+  chatMessage: ChatMessage
+): chatMessage is PlainChatMessage => {
   return (chatMessage as PlainChatMessage).message !== undefined;
-}
+};

@@ -6,8 +6,10 @@ import ChoiceListView from "./components/ChoiceListView";
 import { Route, BrowserRouter, useParams } from "react-router-dom";
 import {
   ChoiceStep,
+  InputStep,
   isChoiceStep,
   isFormStep,
+  isInputStep,
   Scenario,
 } from "./types/Scenario";
 import {
@@ -17,41 +19,17 @@ import {
 } from "./types/ChatMessage";
 import { useMessageGroup } from "./hooks/useMessageGroup";
 import FormView from "./components/FormView";
-
-const buildChatMessageGroups: (
-  chatMessages?: ChatMessage[]
-) => ChatMessage[][] = (chatMessages?: ChatMessage[]) => {
-  const groups: ChatMessage[][] = [];
-  let lastGroup: ChatMessage[];
-
-  if (!chatMessages) return [];
-
-  chatMessages.forEach((msg) => {
-    if (groups.length === 0) {
-      lastGroup = [msg];
-      groups.push(lastGroup);
-      return;
-    }
-
-    if (lastGroup[lastGroup.length - 1].senderType !== msg.senderType) {
-      lastGroup = [msg];
-      groups.push(lastGroup);
-      return;
-    }
-
-    lastGroup.push(msg);
-  });
-
-  return groups;
-};
+import InputView from "./components/InputView";
 
 function App() {
   const { scenarioId } = useParams();
   const [scenario, setScenario] = useState<Scenario>();
   const [currentStep, _setCurrentStep] = useState<number>();
+  const currentStepValue = scenario?.steps[currentStep ?? 0];
+
   const { groups: messageGroups, addMessages } = useMessageGroup();
 
-  const currentStepValue = scenario?.steps[currentStep ?? 0];
+  const [formData, setFormData] = useState<Record<string, string | File>>({});
 
   const toChatMessage: (plainChatMessage: PlainChatMessageBase) => ChatMessage =
     useCallback(
@@ -78,22 +56,55 @@ function App() {
 
   const handleChoice = useCallback(
     (choice: number) => {
-      const currentStep = currentStepValue as ChoiceStep;
-      const nextStep = currentStep.options[choice].step;
+      if (!currentStepValue || !isChoiceStep(currentStepValue)) return;
+      const nextStep = currentStepValue.options[choice].step;
 
       addMessages({
-        message: currentStep.options[choice].message,
+        message: currentStepValue.options[choice].message,
         senderType: "me",
       });
-
       setCurrentStep(nextStep);
     },
     [currentStepValue]
   );
 
-  const handleSubmit = useCallback((formData: FormData) => {
-    
-  }, []);
+  const handleFormSubmit = useCallback(
+    (inputFormData: Record<string, string | File>) => {
+      if (!currentStepValue || !isFormStep(currentStepValue)) return;
+
+      const newFormData = {
+        ...formData,
+        ...inputFormData,
+      };
+      setFormData(newFormData);
+
+      addMessages({
+        senderType: "me",
+        fields: currentStepValue.fields,
+        fieldData: inputFormData,
+      });
+      setCurrentStep(currentStepValue.step);
+    },
+    [currentStepValue, formData]
+  );
+
+  const handleInputSubmit = useCallback(
+    (message: string) => {
+      if (!currentStepValue || !isInputStep(currentStepValue)) return;
+
+      setFormData((formData) => ({
+        ...formData,
+        [currentStepValue.name]: message,
+      }));
+
+      addMessages({
+        message: message,
+        senderType: "me",
+      });
+      setCurrentStep(currentStepValue.step);
+    },
+    [currentStepValue]
+  );
 
   useEffect(() => {
     (async () => {
@@ -110,11 +121,13 @@ function App() {
     setCurrentStep(0);
   }, [scenario]);
 
+  useEffect(() => console.log("formData", formData), [formData]);
+
   return (
     (scenario && currentStep !== undefined && (
       <>
         <div className="App">
-          <Box p={4}>
+          <Box p={4} mb={58}>
             {messageGroups.map((group, groupIndex) => (
               <ChatMessageGroup
                 key={`group-${groupIndex}`}
@@ -134,7 +147,13 @@ function App() {
               <FormView
                 submitButton={currentStepValue.submitButton}
                 fields={currentStepValue.fields}
-                onSubmit={handleSubmit}
+                onSubmit={handleFormSubmit}
+              />
+            )}
+            {isInputStep(currentStepValue!) && (
+              <InputView
+                onSubmit={handleInputSubmit}
+                placeholder={currentStepValue.placeholder}
               />
             )}
           </Box>

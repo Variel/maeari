@@ -6,6 +6,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import React, { HTMLInputTypeAttribute, useCallback, useState } from "react";
+import ReadonlyField from "./ReadonlyField";
 
 interface TextFormFieldEntryProps {
   label: string;
@@ -15,7 +16,8 @@ interface TextFormFieldEntryProps {
   placeholder?: string;
   type?: HTMLInputTypeAttribute;
   value: string;
-  onChange: (value?: string, file?: File) => void;
+  onChange?: (value?: string, file?: File) => void;
+  readonly?: boolean;
 }
 
 const TextFormFieldEntry: React.FC<TextFormFieldEntryProps> = ({
@@ -27,6 +29,7 @@ const TextFormFieldEntry: React.FC<TextFormFieldEntryProps> = ({
   type,
   value,
   onChange,
+  readonly,
 }) => {
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
 
@@ -63,23 +66,31 @@ const TextFormFieldEntry: React.FC<TextFormFieldEntryProps> = ({
     <FormControl isInvalid={!!errorMessage}>
       <FormLabel>
         {label}
-        {required ? (
-          <Text as="span" color="red" ml={1}>
-            *
-          </Text>
-        ) : (
-          <Text as="span" color="gray" ml={1} fontSize="small">
-            (선택)
-          </Text>
+        {readonly ? null : (
+          <>
+            {required ? (
+              <Text as="span" color="red" ml={1}>
+                *
+              </Text>
+            ) : (
+              <Text as="span" color="gray" ml={1} fontSize="small">
+                (선택)
+              </Text>
+            )}
+          </>
         )}
       </FormLabel>
-      <Input
-        type={type ?? "text"}
-        value={value}
-        onChange={handleChange}
-        placeholder={placeholder}
-        pattern={pattern}
-      />
+      {readonly ? (
+        <ReadonlyField value={value} />
+      ) : (
+        <Input
+          type={type ?? "text"}
+          value={value}
+          onChange={handleChange}
+          placeholder={placeholder}
+          pattern={pattern}
+        />
+      )}
       {errorMessage && <FormErrorMessage>{errorMessage}</FormErrorMessage>}
     </FormControl>
   );

@@ -40,7 +40,13 @@ const ChatMessageGroup: React.FC<ChatMessageGroupProps> = ({
             );
           } else {
             // Form message
-            return <FormMessageView fields={msg.fields} />;
+            return (
+              <FormMessageView
+                key={idx}
+                fields={msg.fields}
+                fieldData={msg.fieldData}
+              />
+            );
           }
         })}
       </Box>

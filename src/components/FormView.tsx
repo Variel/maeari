@@ -6,33 +6,31 @@ import FormFieldEntry from "./FormFieldEntry";
 interface FormViewProps {
   submitButton: string;
   fields: FormField[];
-  onSubmit: (formData: FormData) => void;
+  onSubmit: (formData: Record<string, string | File>) => void;
 }
-
-type FormFieldData = {
-  value?: string;
-  file?: File;
-};
 
 const FormView: React.FC<FormViewProps> = ({
   fields,
   onSubmit,
   submitButton,
 }) => {
-  const [fieldData, setFieldData] = useState<Record<string, FormFieldData>>({});
+  const [fieldData, setFieldData] = useState<Record<string, string | File>>({});
 
-  const handleSubmit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleSubmit = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
 
-    const formData = new FormData();
-  }, []);
+      onSubmit(fieldData);
+    },
+    [fieldData]
+  );
 
   const handleChangeField = useCallback(
     (name: string, value?: string, file?: File) => {
       setFieldData((fieldData) => ({
         ...fieldData,
-        [name]: { value: file?.name ?? value, file: file },
+        [name]: file || value || "",
       }));
     },
     []
@@ -53,14 +51,18 @@ const FormView: React.FC<FormViewProps> = ({
             <Box mb={4} key={field.name}>
               <FormFieldEntry
                 field={field}
-                value={fieldData[field.name]?.value ?? ""}
+                value={
+                  (fieldData[field.name] as File)?.name ??
+                  fieldData[field.name] ??
+                  ""
+                }
                 onChange={(value, file) =>
                   handleChangeField(field.name, value, file)
                 }
               />
             </Box>
           ))}
-          <Button variant="solid" colorScheme="blue" size="sm" w="100%">
+          <Button type="submit" variant="solid" colorScheme="blue" w="100%">
             {submitButton}
           </Button>
         </form>

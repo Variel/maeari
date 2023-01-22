@@ -8,7 +8,7 @@ export type Scenario = {
 };
 
 type ScenarioStepBase = {
-  type: "choice" | "form";
+  type: "choice" | "form" | "input";
   messages: PlainChatMessageBase[];
 };
 
@@ -26,9 +26,17 @@ export type FormStep = {
   type: "form";
   fields: FormField[];
   submitButton: string;
+  step: number;
 } & ScenarioStepBase;
 
-export type ScenarioStep = ChoiceStep | FormStep;
+export type InputStep = {
+  type: "input";
+  placeholder: string;
+  step: number;
+  name: string;
+} & ScenarioStepBase;
+
+export type ScenarioStep = ChoiceStep | FormStep | InputStep;
 
 export const isChoiceStep = (step: ScenarioStepBase): step is ChoiceStep => {
   return (step as ChoiceStep).options !== undefined;
@@ -36,4 +44,8 @@ export const isChoiceStep = (step: ScenarioStepBase): step is ChoiceStep => {
 
 export const isFormStep = (step: ScenarioStepBase): step is FormStep => {
   return (step as FormStep).fields !== undefined;
+};
+
+export const isInputStep = (step: ScenarioStepBase): step is InputStep => {
+  return step.type === "input";
 };

@@ -24,7 +24,7 @@
         },
         {
           "message": "엥 진짜요?",
-          "step": 0
+          "step": 3
         }
       ]
     },
@@ -44,40 +44,57 @@
       "fields": [
         {
           "type": "text",
-          "name": "이름",
+          "name": "name",
           "label": "이름을 입력해주세요",
           "placholder": "홍길동",
           "required": true
         },
         {
           "type": "email",
-          "name": "이메일",
+          "name": "email",
           "label": "답장 받을 이메일을 입력해주세요",
           "placeholder": "example@email.com",
           "required": true
         },
         {
-          "type": "select",
-          "name": "성별",
-          "label": "성별을 입력해주세요",
-          "options": ["이거", "저거", "없음", "왜"],
-          "placeholder": "성별",
+          "type": "file",
+          "name": "file1",
+          "label": "스크린샷을 올려주세요",
+          "accept": "image/*",
           "required": false
         },
         {
           "type": "file",
-          "name": "첨부파일",
+          "name": "fil2",
+          "label": "스크린샷을 올려주세요",
+          "accept": "image/*",
+          "required": false
+        },
+        {
+          "type": "file",
+          "name": "file3",
           "label": "스크린샷을 올려주세요",
           "accept": "image/*",
           "required": false
         },
         {
           "type": "text",
-          "name": "트리 주소",
+          "name": "treeAddress",
           "label": "트리 주소를 적어주세요",
           "pattern": "^https:\\/\\/colormytree\\.me\\/",
           "validationMessage": "올바른 트리 주소를 적어주세요",
           "required": false
+        }
+      ]
+    },
+    {
+      "type": "input",
+      "placeholder": "여기에 이름을 적어주세요",
+      "step": 3,
+      "name": "name",
+      "messages": [
+        {
+          "message": "이름을 적어주세요"
         }
       ]
     },

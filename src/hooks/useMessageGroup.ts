@@ -33,14 +33,19 @@ export const useMessageGroup = () => {
 
   const addMessages = useCallback((messages: ChatMessage[] | ChatMessage) => {
     if (Array.isArray(messages)) {
-      setMessages(
-        (prevMessages) => [...prevMessages, ...messages]
-      );
+      setMessages((prevMessages) => [...prevMessages, ...messages]);
     } else {
-      setMessages(
-        (prevMessages) => [...prevMessages, messages]
-      );
+      setMessages((prevMessages) => [...prevMessages, messages]);
     }
+
+    window.setTimeout(
+      () =>
+        window.scrollTo({
+          top: window.document.body.scrollHeight,
+          behavior: "smooth",
+        }),
+      10
+    );
   }, []);
 
   const groups = useMemo(() => buildChatMessageGroups(messages), [messages]);
