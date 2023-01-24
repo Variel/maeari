@@ -7,17 +7,13 @@ interface ReadonlyFieldProps {
 const ReadonlyField: React.FC<ReadonlyFieldProps> = ({ value }) => {
   return (
     <Box
-      display="flex"
-      alignItems="center"
-      background="white"
-      color="black"
-      px={4}
-      py={2}
-      borderRadius={8}
+      whiteSpace="nowrap"
+      overflow="hidden"
+      textOverflow="ellipsis"
+      color="white"
+      fontWeight="bold"
     >
-      <Box whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis">
-        {value}
-      </Box>
+      {value}
     </Box>
   );
 };

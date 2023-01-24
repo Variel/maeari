@@ -11,7 +11,6 @@ const FormMessageView: React.FC<FormMessageViewProps> = ({
   fields,
   fieldData,
 }) => {
-  console.log("fields", fields);
   return (
     <Card
       variant="outline"
@@ -26,7 +25,6 @@ const FormMessageView: React.FC<FormMessageViewProps> = ({
       <CardBody sx={{ "> :last-child": { marginBottom: 0 } }}>
         {fields
           .filter((field) => {
-            console.log(field, fieldData);
             return fieldData[field.name];
           })
           .map((field) => (

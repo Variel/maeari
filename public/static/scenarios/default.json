@@ -16,15 +16,15 @@
       "options": [
         {
           "message": "이게 뭐죠?",
-          "step": 1
+          "nextStep": 1
         },
         {
           "message": "저건 뭐죠?",
-          "step": 2
+          "nextStep": 2
         },
         {
           "message": "엥 진짜요?",
-          "step": 3
+          "nextStep": 3
         }
       ]
     },
@@ -40,7 +40,7 @@
         }
       ],
       "submitButton": "접수하기",
-      "step": 2,
+      "nextStep": 2,
       "fields": [
         {
           "type": "text",
@@ -90,7 +90,7 @@
     {
       "type": "input",
       "placeholder": "여기에 이름을 적어주세요",
-      "step": 3,
+      "nextStep": 3,
       "name": "name",
       "messages": [
         {
@@ -102,10 +102,20 @@
       "type": "choice",
       "messages": [
         {
-          "message": "성공적으로 접수되었습니다"
+          "message": "이대로 접수할까요?"
         }
       ],
-      "options": []
+      "options": [
+        {
+          "message": "네 접수할게요",
+          "nextStep": 4,
+          "action": "submit"
+        },
+        {
+          "message": "아니요, 다시 적을게요",
+          "nextStep": 1
+        }
+      ]
     }
   ]
 }

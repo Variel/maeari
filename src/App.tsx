@@ -20,57 +20,33 @@ import {
 import { useMessageGroup } from "./hooks/useMessageGroup";
 import FormView from "./components/FormView";
 import InputView from "./components/InputView";
+import useScenarioStep from "./hooks/useScenarioStep";
+import useScenario from "./hooks/useScenario";
 
 function App() {
-  const { scenarioId } = useParams();
-  const [scenario, setScenario] = useState<Scenario>();
-  const [currentStep, _setCurrentStep] = useState<number>();
-  const currentStepValue = scenario?.steps[currentStep ?? 0];
-
+  const scenario = useScenario();
   const { groups: messageGroups, addMessages } = useMessageGroup();
+  const { step, setStep } = useScenarioStep(scenario, addMessages);
 
   const [formData, setFormData] = useState<Record<string, string | File>>({});
 
-  const toChatMessage: (plainChatMessage: PlainChatMessageBase) => ChatMessage =
-    useCallback(
-      (plainChatMessage: PlainChatMessageBase) => {
-        return { ...plainChatMessage, senderType: "other" };
-      },
-      [scenario]
-    );
-
-  const setCurrentStep = useCallback(
-    (step: number) => {
-      if (!scenario?.steps[step]) return;
-      if (step === currentStep) return;
-
-      _setCurrentStep(step);
-
-      const messagesToAdd = scenario.steps[step].messages.map((msg) =>
-        toChatMessage(msg)
-      );
-      addMessages(messagesToAdd);
-    },
-    [scenario, _setCurrentStep]
-  );
-
   const handleChoice = useCallback(
     (choice: number) => {
-      if (!currentStepValue || !isChoiceStep(currentStepValue)) return;
-      const nextStep = currentStepValue.options[choice].step;
+      if (!step || !isChoiceStep(step)) return;
+      const nextStep = step.options[choice].nextStep;
 
       addMessages({
-        message: currentStepValue.options[choice].message,
+        message: step.options[choice].message,
         senderType: "me",
       });
-      setCurrentStep(nextStep);
+      setStep(nextStep);
     },
-    [currentStepValue]
+    [step]
   );
 
   const handleFormSubmit = useCallback(
     (inputFormData: Record<string, string | File>) => {
-      if (!currentStepValue || !isFormStep(currentStepValue)) return;
+      if (!step || !isFormStep(step)) return;
 
       const newFormData = {
         ...formData,
@@ -80,51 +56,34 @@ function App() {
 
       addMessages({
         senderType: "me",
-        fields: currentStepValue.fields,
+        fields: step.fields,
         fieldData: inputFormData,
       });
-      setCurrentStep(currentStepValue.step);
+      setStep(step.nextStep);
     },
-    [currentStepValue, formData]
+    [step, formData]
   );
 
   const handleInputSubmit = useCallback(
     (message: string) => {
-      if (!currentStepValue || !isInputStep(currentStepValue)) return;
+      if (!step || !isInputStep(step)) return;
 
       setFormData((formData) => ({
         ...formData,
-        [currentStepValue.name]: message,
+        [step.name]: message,
       }));
 
       addMessages({
         message: message,
         senderType: "me",
       });
-      setCurrentStep(currentStepValue.step);
+      setStep(step.nextStep);
     },
-    [currentStepValue]
+    [step]
   );
 
-  useEffect(() => {
-    (async () => {
-      const scenarioData = (await fetch(
-        `/static/scenarios/${scenarioId}.json`
-      ).then((res) => res.json())) as Scenario;
-      setScenario(scenarioData);
-    })();
-  }, [scenarioId]);
-
-  useEffect(() => {
-    if (!scenario) return;
-
-    setCurrentStep(0);
-  }, [scenario]);
-
-  useEffect(() => console.log("formData", formData), [formData]);
-
   return (
-    (scenario && currentStep !== undefined && (
+    (scenario && step !== undefined && (
       <>
         <div className="App">
           <Box p={4} mb={58}>
@@ -137,23 +96,23 @@ function App() {
                 {group}
               </ChatMessageGroup>
             ))}
-            {isChoiceStep(currentStepValue!) && (
+            {isChoiceStep(step!) && (
               <ChoiceListView
-                options={currentStepValue.options.map((opt) => opt.message)}
+                options={step.options.map((opt) => opt.message)}
                 onChoice={handleChoice}
               />
             )}
-            {isFormStep(currentStepValue!) && (
+            {isFormStep(step!) && (
               <FormView
-                submitButton={currentStepValue.submitButton}
-                fields={currentStepValue.fields}
+                submitButton={step.submitButton}
+                fields={step.fields}
                 onSubmit={handleFormSubmit}
               />
             )}
-            {isInputStep(currentStepValue!) && (
+            {isInputStep(step!) && (
               <InputView
                 onSubmit={handleInputSubmit}
-                placeholder={currentStepValue.placeholder}
+                placeholder={step.placeholder}
               />
             )}
           </Box>

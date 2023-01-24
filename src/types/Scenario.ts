@@ -15,24 +15,25 @@ type ScenarioStepBase = {
 export type ChoiceStep = {
   type: "choice";
   options: ChoiceOption[];
+  action: "submit";
 } & ScenarioStepBase;
 
 export type ChoiceOption = {
   message: string;
-  step: number;
+  nextStep: number;
 };
 
 export type FormStep = {
   type: "form";
   fields: FormField[];
   submitButton: string;
-  step: number;
+  nextStep: number;
 } & ScenarioStepBase;
 
 export type InputStep = {
   type: "input";
   placeholder: string;
-  step: number;
+  nextStep: number;
   name: string;
 } & ScenarioStepBase;
 
