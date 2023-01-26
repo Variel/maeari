@@ -32,7 +32,7 @@ const useScenarioStep = (
   useEffect(() => {
     if (!scenario) return;
 
-    setStep(0);
+    setStep(scenario.initialStep);
   }, [scenario]);
 
   return {

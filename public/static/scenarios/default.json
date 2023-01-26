@@ -1,6 +1,7 @@
 {
   "senderName": "산타파이브",
   "senderImage": "https://picsum.photos/400/400",
+  "initialStep": 0,
   "steps": [
     {
       "type": "choice",

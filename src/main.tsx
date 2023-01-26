@@ -3,6 +3,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import App from "./App";
+import Editor from "./Editor";
 import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
@@ -11,6 +12,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
       <BrowserRouter>
         <Routes>
           <Route path="scenarios/:scenarioId" element={<App />} />
+          <Route path="editor" element={<Editor />} />
         </Routes>
       </BrowserRouter>
     </ChakraProvider>

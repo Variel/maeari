@@ -5,6 +5,7 @@ export type Scenario = {
   senderName: string;
   senderImage: string;
   steps: ScenarioStep[];
+  initialStep: number;
 };
 
 type ScenarioStepBase = {
