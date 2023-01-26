@@ -10,55 +10,60 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useCallback, useState } from "react";
-import { Handle, NodeProps, Position, useEdges } from "reactflow";
+import { Handle, NodeProps, Position, useEdges, useReactFlow } from "reactflow";
+import ChoiceOptionEditor from "../components/ChoiceOptionEditor";
 import MessageListEditor from "../components/MessageListEditor";
 import { PlainChatMessageBase } from "../types/ChatMessage";
 
-interface ChoiceOptionViewProps {
-  index: number;
-  message: string;
+interface ChoiceNodeProps {
+  options: string[];
+  messages: PlainChatMessageBase[];
 }
 
-const ChoiceOptionView: React.FC<ChoiceOptionViewProps> = ({
-  index,
-  message,
+const ChoiceNode: React.FC<NodeProps<ChoiceNodeProps>> = ({
+  id,
+  data: { messages, options },
 }) => {
-  return (
-    <Card size="sm" variant="outline" position="relative">
-      <CardBody>
-        <Flex>
-          <Input variant="unstyled" placeholder="선택지 메시지" required />
-          <Button
-            size="xs"
-            borderRadius="full"
-            padding={0}
-            colorScheme="red"
-            ml={2}
-          >
-            <CloseIcon />
-          </Button>
-        </Flex>
-        <Handle
-          id={`choice-${index}`}
-          type="source"
-          position={Position.Right}
-        />
-      </CardBody>
-    </Card>
-  );
-};
+  const reactflow = useReactFlow();
+  const edges = reactflow.getEdges();
 
-const ChoiceNode: React.FC<NodeProps> = ({ id }) => {
-  const edges = useEdges();
   const hasOutput = edges.find((edge) => edge.source === id);
-
-  const [messages, setMessages] = useState<PlainChatMessageBase[]>([]);
 
   const handleMessageListChange = useCallback(
     (messages: PlainChatMessageBase[]) => {
-      setMessages(messages);
+      reactflow.setNodes((nodes) =>
+        nodes?.map((node) =>
+          node.id === id
+            ? {
+                ...node,
+                data: {
+                  ...node.data,
+                  messages,
+                },
+              }
+            : node
+        )
+      );
     },
     []
+  );
+
+  const handleOptionListChange = useCallback(
+    (options: string[]) => {
+      reactflow.setNodes((nodes) =>
+        nodes?.map((node) => {
+          if (node.id === id) {
+            node.data = {
+              ...node.data,
+              options: [...options],
+            };
+          }
+
+          return node;
+        })
+      );
+    },
+    [reactflow]
   );
 
   return (
@@ -81,7 +86,9 @@ const ChoiceNode: React.FC<NodeProps> = ({ id }) => {
             borderRadius="full"
             padding={0}
             colorScheme="blue"
-            onClick={() => setMessages([...messages, { message: "" }])}
+            onClick={() =>
+              handleMessageListChange([...messages, { message: "" }])
+            }
           >
             <AddIcon />
           </Button>
@@ -91,10 +98,19 @@ const ChoiceNode: React.FC<NodeProps> = ({ id }) => {
 
         <Text mb={2}>선택지 목록</Text>
 
-        <ChoiceOptionView index={1} message="푸힝힝" />
+        <ChoiceOptionEditor
+          options={options}
+          onChange={handleOptionListChange}
+        />
 
         <Flex justifyContent="center" mt={4}>
-          <Button size="sm" borderRadius="full" padding={0} colorScheme="blue">
+          <Button
+            size="sm"
+            borderRadius="full"
+            padding={0}
+            colorScheme="blue"
+            onClick={() => handleOptionListChange([...options, ""])}
+          >
             <AddIcon />
           </Button>
         </Flex>

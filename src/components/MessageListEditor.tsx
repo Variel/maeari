@@ -22,10 +22,14 @@ const MessageListEditor: React.FC<MessageListEditorProps> = ({
 }) => {
   const handleChangeValue = useCallback(
     (index: number, message: string) => {
-      const newMessages = [...messages];
-      newMessages[index].message = message;
+      if (!message) {
+        onChange([...messages.slice(0, index), ...messages.slice(index + 1)]);
+      } else {
+        const newMessages = [...messages];
+        newMessages[index].message = message;
 
-      onChange(newMessages);
+        onChange(newMessages);
+      }
     },
     [messages, onChange]
   );
